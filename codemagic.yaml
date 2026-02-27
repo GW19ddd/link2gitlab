@@ -4,7 +4,7 @@ workflows:
   snore-detector-ios-watch:
     name: Snore Detector (iOS + WatchOS)
     instance_type: mac_mini_m1
-    max_build_duration: 180
+    max_build_duration: 120
     environment:
       # 指定最新 Xcode 版本，兼容 watchOS/iOS
       xcode: 15.4

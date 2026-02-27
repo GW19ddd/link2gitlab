@@ -96,11 +96,11 @@ workflows:
     # 发布配置（支持直装链接/TestFlight）
     publishing:
       # 生成直装链接（手机打开即可安装）
-      app_store_connect:
-        api_key: $APP_STORE_CONNECT_API_KEY
-        api_key_id: $APP_STORE_CONNECT_API_KEY_ID
-        api_key_issuer_id: $APP_STORE_CONNECT_API_KEY_ISSUER_ID
-        submit_to_testflight: false
+      # app_store_connect:
+      #   api_key: $APP_STORE_CONNECT_API_KEY
+      #   api_key_id: $APP_STORE_CONNECT_API_KEY_ID
+      #   api_key_issuer_id: $APP_STORE_CONNECT_API_KEY_ISSUER_ID
+      #   submit_to_testflight: false
       # 发送构建结果到邮箱
       email:
         recipients:

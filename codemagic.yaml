@@ -1,5 +1,3 @@
-
-
 workflows:
   snore-detector-ios-watch:
     name: Snore Detector (iOS + WatchOS)
@@ -10,6 +8,10 @@ workflows:
       xcode: 16.0
       cocoapods: default
     scripts:
+    #先下载 xcodegen
+      - name: Install xcodegen
+        script: |
+          brew install xcodegen
     #CodeMagic 中添加「前置脚本」，云端生成基础 Xcode 项目：在 codemagic.yaml 的 scripts 开头新增
       - name: Generate Xcode project (云端)
         script: |

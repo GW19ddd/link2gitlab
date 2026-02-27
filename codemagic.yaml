@@ -1,0 +1,107 @@
+
+
+workflows:
+  snore-detector-ios-watch:
+    name: Snore Detector (iOS + WatchOS)
+    instance_type: mac_mini_m1
+    max_build_duration: 180
+    environment:
+      # 指定最新 Xcode 版本，兼容 watchOS/iOS
+      xcode: 15.4
+      cocoapods: default
+    scripts:
+    #CodeMagic 中添加「前置脚本」，云端生成基础 Xcode 项目：在 codemagic.yaml 的 scripts 开头新增
+      - name: Generate Xcode project (云端)
+        script: |
+          # 创建 iOS + WatchOS 项目（替换为你的项目名）
+          xcodegen generate --spec <(cat <<EOF
+          name: SnoreDetector
+          targets:
+            SnoreDetector:
+              type: application
+              platform: iOS
+              deploymentTarget: 15.0
+              sources:
+                - SnoreDetector
+              infoPlist:
+                path: SnoreDetector/Info.plist
+                properties:
+                  NSMicrophoneUsageDescription: "需要麦克风权限监测呼噜声"
+                  UIBackgroundModes:
+                    - audio
+              capabilities:
+                - name: watchConnectivity
+            SnoreDetector Watch App:
+              type: watch2app
+              platform: watchOS
+              deploymentTarget: 8.0
+              sources:
+                - SnoreDetector Watch App
+              infoPlist:
+                path: SnoreDetector Watch App/Info.plist
+              dependencies:
+                - target: SnoreDetector
+          EOF
+          )
+      # 步骤1：安装依赖（无 Pod 则跳过）
+      - name: Install dependencies
+        script: |
+          if [ -f "Podfile" ]; then
+            pod install
+          fi
+      # 步骤2：设置签名（免费个人账号自动签名）
+      - name: Set up code signing
+        script: |
+          xcode-project use-profiles
+      # 步骤3：构建 iOS + WatchOS 项目
+      - name: Build iOS & WatchOS app
+        script: |
+          # 替换为你的项目名和 Scheme 名（必须和 Xcode 一致）
+          xcodebuild -workspace "SnoreDetector.xcworkspace" \
+                     -scheme "SnoreDetector" \
+                     -configuration Release \
+                     -destination 'generic/platform=iOS' \
+                     -archivePath build/SnoreDetector.xcarchive \
+                     archive CODE_SIGN_STYLE=Automatic \
+                     DEVELOPMENT_TEAM=$(xcode-project get-team-id)
+      # 步骤4：导出 IPA 文件（用于安装到真机）
+      - name: Export IPA
+        script: |
+          xcodebuild -exportArchive \
+                     -archivePath build/SnoreDetector.xcarchive \
+                     -exportPath build/ipa \
+                     -exportOptionsPlist <(cat <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+              <key>method</key>
+              <string>development</string>
+              <key>teamID</key>
+              <string>$(xcode-project get-team-id)</string>
+              <key>compileBitcode</key>
+              <false/>
+              <key>stripSwiftSymbols</key>
+              <true/>
+              <key>signingStyle</key>
+              <string>automatic</string>
+          </dict>
+          </plist>
+          EOF
+          )
+    # 输出构建产物（IPA 文件）
+    artifacts:
+      - build/ipa/*.ipa
+      - build/SnoreDetector.xcarchive
+    # 发布配置（支持直装链接/TestFlight）
+    publishing:
+      # 生成直装链接（手机打开即可安装）
+      app_store_connect:
+        api_key: $APP_STORE_CONNECT_API_KEY
+        api_key_id: $APP_STORE_CONNECT_API_KEY_ID
+        api_key_issuer_id: $APP_STORE_CONNECT_API_KEY_ISSUER_ID
+        submit_to_testflight: false
+      # 发送构建结果到邮箱
+      email:
+        recipients:
+          - 2994574297@qq.com # 替换为你的邮箱地址

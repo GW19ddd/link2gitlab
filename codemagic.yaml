@@ -7,7 +7,7 @@ workflows:
     max_build_duration: 120
     environment:
       # 指定最新 Xcode 版本，兼容 watchOS/iOS
-      xcode: 15.0
+      xcode: 16.0
       cocoapods: default
     scripts:
     #CodeMagic 中添加「前置脚本」，云端生成基础 Xcode 项目：在 codemagic.yaml 的 scripts 开头新增

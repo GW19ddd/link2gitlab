@@ -24,7 +24,7 @@
     <key>WKApplication</key>
     <true/>
     <key>WKCompanionAppBundleIdentifier</key>
-    <string>$(PRODUCT_BUNDLE_IDENTIFIER).ios</string>
+    <string>com.snoredetector.ios</string>
     
     <!-- 新增：Watch 和手机后台通信权限（必须） -->
     <key>WKBackgroundModes</key>

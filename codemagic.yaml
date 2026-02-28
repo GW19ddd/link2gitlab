@@ -33,10 +33,16 @@ workflows:
                   NSMicrophoneUsageDescription: "需要麦克风权限监测呼噜声"
                   UIBackgroundModes:
                     - audio
+              settings:
+                base:
+                  PRODUCT_BUNDLE_IDENTIFIER: com.snoredetector.ios
               capabilities:
                 - name: watchConnectivity
+              dependencies:
+                - target: SnoreDetector Watch App
+                  embed: true
             SnoreDetector Watch App:
-              type: watch2App
+              type: application.watchapp2
               platform: watchOS
               deploymentTarget: 8.0
               sources:
@@ -44,9 +50,22 @@ workflows:
               infoPlist:
                 path: SnoreDetector Watch App/Info.plist
               dependencies:
-                - target: SnoreDetector
+                - target: SnoreDetector Watch Extension
               settings:
-                WK_COMPANION_APP_BUNDLE_IDENTIFIER: \$(PRODUCT_BUNDLE_IDENTIFIER) # 匹配主应用BundleID
+                base:
+                  PRODUCT_BUNDLE_IDENTIFIER: com.snoredetector.watchapp
+                  WK_COMPANION_APP_BUNDLE_IDENTIFIER: com.snoredetector.ios
+            SnoreDetector Watch Extension:
+              type: watchkit2-extension
+              platform: watchOS
+              deploymentTarget: 8.0
+              sources:
+                - SnoreDetector Watch Extension
+              infoPlist:
+                path: SnoreDetector Watch Extension/Info.plist
+              settings:
+                base:
+                  PRODUCT_BUNDLE_IDENTIFIER: com.snoredetector.watchextension
           EOF
           # 生成Xcode项目
           xcodegen generate --spec snore_detector_spec.yml

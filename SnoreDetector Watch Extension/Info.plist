@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- WatchKit Extension 的基础配置。该扩展将作为 Watch App 的可执行逻辑入口。 -->
+    <key>CFBundleDevelopmentRegion</key>
+    <string>en</string>
+    <key>CFBundleDisplayName</key>
+    <string>$(PRODUCT_NAME)</string>
+    <key>CFBundleExecutable</key>
+    <string>$(EXECUTABLE_NAME)</string>
+    <key>CFBundleIdentifier</key>
+    <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundleName</key>
+    <string>$(PRODUCT_NAME)</string>
+    <key>CFBundlePackageType</key>
+    <string>XPC!</string>
+    <key>CFBundleShortVersionString</key>
+    <string>1.0</string>
+    <key>CFBundleVersion</key>
+    <string>1</string>
+
+    <!-- WatchKit 扩展声明（必填）。 -->
+    <key>NSExtension</key>
+    <dict>
+        <key>NSExtensionAttributes</key>
+        <dict>
+            <!-- 关联到同一项目中生成的 Watch App（application.watchapp2）。 -->
+            <key>WKAppBundleIdentifier</key>
+            <string>com.snoredetector.watchapp</string>
+        </dict>
+        <key>NSExtensionPointIdentifier</key>
+        <string>com.apple.watchkit2-extension</string>
+        <!-- 对应 Swift 入口类：SnoreDetector_Watch_Extension.ExtensionDelegate -->
+        <key>NSExtensionPrincipalClass</key>
+        <string>$(PRODUCT_MODULE_NAME).ExtensionDelegate</string>
+    </dict>
+</dict>
+</plist>

@@ -81,7 +81,7 @@ workflows:
       - name: Set up code signing
         script: |
           xcode-project use-profiles
-          TEAM_ID="${DEVELOPMENT_TEAM_ID:-$(xcode-project get-team-id)}"
+          TEAM_ID="$DEVELOPMENT_TEAM_ID"
           if [ -z "$TEAM_ID" ]; then
             echo "ERROR: 未获取到 DEVELOPMENT_TEAM。请在 Codemagic 环境变量中配置 DEVELOPMENT_TEAM_ID（Apple Developer Team ID），或在 Codemagic UI 配置签名证书/描述文件后重试。"
             exit 1
@@ -92,9 +92,6 @@ workflows:
       # 步骤5：构建iOS+WatchOS项目（Debug版，便于真机调试）
       - name: Build iOS & WatchOS app (Debug)
         script: |
-          if [ -z "$TEAM_ID" ]; then
-            TEAM_ID="${DEVELOPMENT_TEAM_ID:-$(xcode-project get-team-id)}"
-          fi
           xcodebuild -project "SnoreDetector.xcodeproj" \
                      -scheme "SnoreDetector" \
                      -configuration Debug \
@@ -107,9 +104,6 @@ workflows:
       # 步骤6：导出可安装的IPA（Debug版，支持真机调试）
       - name: Export IPA (Debug)
         script: |
-          if [ -z "$TEAM_ID" ]; then
-            TEAM_ID="${DEVELOPMENT_TEAM_ID:-$(xcode-project get-team-id)}"
-          fi
           xcodebuild -exportArchive \
                      -archivePath build/SnoreDetector-Debug.xcarchive \
                      -exportPath build/ipa \

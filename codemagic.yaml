@@ -36,7 +36,7 @@ workflows:
               capabilities:
                 - name: watchConnectivity
             SnoreDetector Watch App:
-              type: watch2app # xcodegen通用WatchOS应用类型（核心修复）
+              type: watch2App
               platform: watchOS
               deploymentTarget: 8.0
               sources:
@@ -44,7 +44,7 @@ workflows:
               infoPlist:
                 path: SnoreDetector Watch App/Info.plist
               dependencies:
-                - target: SnoreDetector # 关联iOS主应用（必须）
+                - target: SnoreDetector
               settings:
                 WK_COMPANION_APP_BUNDLE_IDENTIFIER: \$(PRODUCT_BUNDLE_IDENTIFIER) # 匹配主应用BundleID
           EOF

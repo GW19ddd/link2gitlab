@@ -83,8 +83,9 @@ workflows:
           xcode-project use-profiles
           TEAM_ID="$DEVELOPMENT_TEAM_ID"
           if [ -z "$TEAM_ID" ]; then
-            echo "ERROR: 未获取到 DEVELOPMENT_TEAM。请在 Codemagic 环境变量中配置 DEVELOPMENT_TEAM_ID（Apple Developer Team ID），或在 Codemagic UI 配置签名证书/描述文件后重试。"
-            exit 1
+            echo "未配置 DEVELOPMENT_TEAM_ID：将改为仅做 iOS Simulator 编译/测试（不签名、不导出 IPA）。"
+            echo "SKIP_ARCHIVE=1" >> $CM_ENV
+            exit 0
           fi
           echo "Using DEVELOPMENT_TEAM=$TEAM_ID"
           echo "TEAM_ID=$TEAM_ID" >> $CM_ENV
@@ -92,6 +93,18 @@ workflows:
       # 步骤5：构建iOS+WatchOS项目（Debug版，便于真机调试）
       - name: Build iOS & WatchOS app (Debug)
         script: |
+          if [ "$SKIP_ARCHIVE" = "1" ]; then
+            xcodebuild -project "SnoreDetector.xcodeproj" \
+                       -scheme "SnoreDetector" \
+                       -configuration Debug \
+                       -destination 'platform=iOS Simulator,name=iPhone 15' \
+                       clean test \
+                       CODE_SIGNING_ALLOWED=NO \
+                       CODE_SIGNING_REQUIRED=NO \
+                       CODE_SIGN_IDENTITY="" \
+                       COMPILER_INDEX_STORE_ENABLE=NO
+            exit 0
+          fi
           xcodebuild -project "SnoreDetector.xcodeproj" \
                      -scheme "SnoreDetector" \
                      -configuration Debug \
@@ -104,6 +117,10 @@ workflows:
       # 步骤6：导出可安装的IPA（Debug版，支持真机调试）
       - name: Export IPA (Debug)
         script: |
+          if [ "$SKIP_ARCHIVE" = "1" ]; then
+            echo "跳过导出 IPA：未配置 DEVELOPMENT_TEAM_ID。"
+            exit 0
+          fi
           xcodebuild -exportArchive \
                      -archivePath build/SnoreDetector-Debug.xcarchive \
                      -exportPath build/ipa \
